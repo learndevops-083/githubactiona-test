@@ -1,4 +1,4 @@
-name: Run cli commands
+name: Run shell commands
 on: [push]
 
 jobs: 
@@ -6,4 +6,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Echo a string 
-        run: echo"hello security gurus!! this is our first Github actions workflow file"
+        run: echo "hello security gurus!! this is our first Github actions workflow file"
