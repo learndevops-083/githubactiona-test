@@ -1,9 +1,9 @@
-name: OWASP ZAP Scan
+name: OWASP ZAP Security Scan
 
 on:
   push:
     branches:
-      - main # Specify the branch you want to trigger the workflow on
+      - main
 
 jobs:
   zap_scan:
@@ -11,23 +11,13 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-
-      - name: Install OWASP ZAP
-        run: |
-          # Install OWASP ZAP
-          curl -s https://raw.githubusercontent.com/zaproxy/zaproxy/develop/docker/Dockerfile.stable -o Dockerfile
-          docker build -t zap2docker-stable -f Dockerfile .
-        if: matrix.os == 'ubuntu-latest' # Only for ubuntu-latest runner
-
-      - name: ZAP Scan
-        run: |
-          # Run ZAP Scan
-          docker run --name zap-scan -t --rm -v $(pwd):/zap/wrk/:rw -i zap2docker-stable zap-baseline.py -t 'http://testphp.vulnweb.com/' -r 'zap-report.html' -w 'zap-warn-report.html'
-        if: matrix.os == 'ubuntu-latest' # Only for ubuntu-latest runner
-
-      - name: Upload ZAP Scan Report
-        uses: actions/upload-artifact@v2
         with:
-          name: zap-scan-report
-          path: zap-report.html
+          ref: main
 
+      - name: Run OWASP ZAP Scan
+        uses: zaproxy/action-baseline@v0.6.1
+        with:
+          docker_name: 'owasp/zap2docker-stable'
+          target: 'http://testphp.vulnweb.com/'
+          rules_file_name: '.zap/rules.tsv'
+          cmd_options: '-a'
